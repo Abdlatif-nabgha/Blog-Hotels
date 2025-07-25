@@ -1,15 +1,20 @@
-const express = require('express');
-import type { Request, Response } from 'express';
-const dotenv = require('dotenv');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
 dotenv.config();
-const { connectDB } = require('./config/db');
+import connectDB from './config/db';
+import hotelRouter from './routers/hotel.routes';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
-app.get('/', (_req: Request, res: Response) => {
-    res.send('Hello from Express + TypeScript!');
-});
+// parse json
+app.use(express.json());
+// cors
+app.use(cors());
+
+// routes
+app.use('/api/hotels', hotelRouter);
 
 app.listen(PORT, async () => {
     await connectDB();
