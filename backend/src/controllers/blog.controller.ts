@@ -108,3 +108,26 @@ export const deleteBlog = async (req: Request, res: Response) => {
     }
 }
 
+// related blogs
+export const relatedBlogs = async (req: Request, res: Response) => {
+    try {
+        const {id} = req.params;
+        if (!id) {
+            return res.status(400).json({ message: 'Blog ID is required' });
+        }
+        const blog: IBlog | null = await Blog.findById(id);
+        if (!blog) {
+            return res.status(404).json({ message: 'Blog not found' });
+        }
+        const titleRegex = new RegExp(blog.title.split(' ').join('|'), 'i');
+        const relatedQuery = {
+            _id: { $ne: id },
+            title: { $regex: titleRegex},
+        }
+        const relatedBlogs: IBlog[] = await Blog.find(relatedQuery);
+        res.status(200).json(relatedBlogs);
+    } catch (error) {
+        console.error('Error fetching related blogs:', error);
+        res.status(500).json({ message: 'Error fetching related blogs', error });
+    }
+}
