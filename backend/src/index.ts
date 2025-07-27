@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
 import connectDB from './config/db';
-import hotelRouter from './routers/hotel.routes';
+import blogRouter from './routes/blog.routes';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors());
 
 // routes
-app.use('/api/hotels', hotelRouter);
+app.use('/api/blogs', blogRouter);
 
 app.listen(PORT, async () => {
     await connectDB();
