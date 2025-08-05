@@ -5,7 +5,7 @@ export interface IComment extends Document {
     comment: string;
     user: string;
     blog: string;
-    createdAt: Date;
+    createdAt?: Date;
 }
 
 
@@ -19,14 +19,14 @@ const CommentSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    blog: {
+    postId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Blog',
         required: true
     },
     createdAt: {
         type: Date,
-        default: Date.now,
+        default: Date.now
     }
 })
 

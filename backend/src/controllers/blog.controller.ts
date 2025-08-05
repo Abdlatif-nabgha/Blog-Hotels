@@ -1,6 +1,7 @@
 // create blog-hotel controller
 import { Request, Response } from 'express';
 import Blog, {IBlog} from '../models/blog.model';
+import Comment from '../models/comment.model';
 
 // Get all hotels
 export const getAllBlogs = async (_req: Request, res: Response) => {
@@ -19,21 +20,21 @@ export const getAllBlogs = async (_req: Request, res: Response) => {
         }
 
         if (category) {
-            query = { ...query, category };
+            query = { ...query, category:{ $regex: category, $options: 'i'} };
         }
         if (location) {
-            query = { ...query, location };
+            query = { ...query, location: { $regex: location, $options: 'i' } };
         }
 
         const blogs: IBlog[] = await Blog.find(query).sort({ createdAt: -1 });
         res.status(200).json(blogs);
     } catch (error) {
-        console.error('Error fetching hotels:', error);
-        res.status(500).json({ message: 'Error fetching hotels', error });
+        console.error('Error fetching blogs:', error);
+        res.status(500).json({ message: 'Error fetching blogs', error });
     }
 }
 
-// Get a single hotel by ID
+// Get a single blog by ID
 export const getBlogById = async (req: Request, res: Response) => {
     try {
         const blogId = req.params.id;
@@ -41,18 +42,20 @@ export const getBlogById = async (req: Request, res: Response) => {
         if (!blog) {
             return res.status(404).json({ message: 'Blog not found' });
         }
-        res.status(200).json(blog);
+        // todo: also fetch comments related to blog later  إِنْ شاء الله 
+        const comments = await Comment.find({ postId: blogId }).populate('user', 'username email');
+        res.status(200).json({blog, comments});
     } catch (error) {
         console.error('Error fetching blog:', error);
         res.status(500).json({ message: 'Error fetching blog', error });
     }
 }
 
-// Create a new hotel
+// Create a new blog
 export const createBlog = async (req: Request, res: Response) => {
     try {
     // ✅ Type-safe creation with spread
-    const blog: IBlog = await Blog.create({ ...req.body });
+    const blog: IBlog = await Blog.create({ ...req.body }); // const blog = new Blog({...req.body}); await blog.save();
     // ✅ Type-safe response
     res.status(201).json({
         success: true,
@@ -69,7 +72,7 @@ export const createBlog = async (req: Request, res: Response) => {
     }
 }
 
-// Update a hotel by ID
+// Update a blog by ID
 export const updateBlog = async (req: Request, res: Response) => {
     try {
         const blogId = req.params.id;
@@ -90,7 +93,7 @@ export const updateBlog = async (req: Request, res: Response) => {
     }
 }
 
-// Delete a hotel by ID
+// Delete a blog by ID
 export const deleteBlog = async (req: Request, res: Response) => {
     try {
         const blogId = req.params.id;
@@ -98,6 +101,8 @@ export const deleteBlog = async (req: Request, res: Response) => {
         if (!deletedBlog) {
             return res.status(404).json({ message: 'Blog not found' });
         }
+        // delete all comments related to this post
+        await Comment.deleteMany({ postId: blogId });
         res.status(200).json({
             success: true,
             message: 'Blog deleted successfully',
@@ -123,6 +128,7 @@ export const relatedBlogs = async (req: Request, res: Response) => {
         const relatedQuery = {
             _id: { $ne: id },
             title: { $regex: titleRegex},
+            
         }
         const relatedBlogs: IBlog[] = await Blog.find(relatedQuery);
         res.status(200).json(relatedBlogs);
