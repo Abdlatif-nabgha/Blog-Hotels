@@ -1,5 +1,6 @@
 import express from "express";
 import { getAllBlogs, createBlog, getBlogById, updateBlog, deleteBlog, relatedBlogs } from '../controllers/blog.controller';
+import { verifyToken } from "../middlewares/verifyToken";
 
 const router = express.Router();
 
@@ -13,12 +14,12 @@ router.get('/:id', getBlogById);
 router.get('/related-blogs/:id', relatedBlogs);
 
 // create a new blog-hotel
-router.post('/create-blog', createBlog);
+router.post('/create-blog',verifyToken, createBlog);
 
 // put request
-router.put('/update-blog/:id', updateBlog);
+router.put('/update-blog/:id', verifyToken, updateBlog);
 
 // delete request
-router.delete('/delete-blog/:id', deleteBlog);
+router.delete('/delete-blog/:id', verifyToken, deleteBlog);
 
 export default router;
