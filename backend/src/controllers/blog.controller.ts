@@ -26,7 +26,7 @@ export const getAllBlogs = async (_req: Request, res: Response) => {
             query = { ...query, location: { $regex: location, $options: 'i' } };
         }
 
-        const blogs: IBlog[] = await Blog.find(query).sort({ createdAt: -1 });
+        const blogs: IBlog[] = await Blog.find(query).populate('author', 'email').sort({ createdAt: -1 });
         res.status(200).json(blogs);
     } catch (error) {
         console.error('Error fetching blogs:', error);
@@ -55,7 +55,9 @@ export const getBlogById = async (req: Request, res: Response) => {
 export const createBlog = async (req: Request, res: Response) => {
     try {
     // ✅ Type-safe creation with spread
-    const blog: IBlog = await Blog.create({ ...req.body }); // const blog = new Blog({...req.body}); await blog.save();
+    // todo: author: req.userId ; add this when you have tokenVerify middleware
+    const blog: IBlog = await Blog.create({ ...req.body }); 
+    // const blog = new Blog({...req.body, author: req.user.id}); await blog.save();
     // ✅ Type-safe response
     res.status(201).json({
         success: true,

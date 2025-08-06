@@ -4,12 +4,12 @@ import { Document } from "mongoose";
 export interface IBlog extends Document {
     title: string;
     description?: string;
-    content?: string;
-    coverImg?: string; // add coverImg field
-    category?: string;
-    author?: string;
-    rating?: number;
-    createdAt?: Date; // add createdAt field
+    content: Object;
+    coverImg: string; // add coverImg field
+    category: string;
+    author: mongoose.Schema.Types.ObjectId;
+    rating: number;
+    createdAt: Date; // add createdAt field
 }
 
 
@@ -19,10 +19,17 @@ const BlogSchema = new mongoose.Schema({
         required: true,
     },
     description: String,
-    content: String,
+    content: {
+        type: Object,
+        required: true
+    },
     coverImg: String,
     category: String,
-    author: String,
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
     rating: Number,
     createdAt: {
         type: Date,
