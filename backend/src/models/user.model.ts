@@ -42,15 +42,15 @@ const UserSchema: Schema<IUser> = new Schema({
 
 // ✅ Hash password before saving
 UserSchema.pre<IUser>('save', async function (next) {
-    if (!this.isModified('password')) return next();
-
+    if(!this.isModified('password')) return next();
     try {
-        const salt = await bcrypt.genSalt(12); // More rounds = more secure but slower
+        const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(this.password, salt);
         this.password = hashedPassword;
         next();
-    } catch (err) {
-        next(err as Error);
+    } catch(error) {
+        console.error('Error hashing password', error);
+        next(error);
     }
 });
 
