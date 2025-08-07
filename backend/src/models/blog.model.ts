@@ -3,7 +3,7 @@ import { Document } from "mongoose";
 
 export interface IBlog extends Document {
     title: string;
-    description?: string;
+    description: string;
     content: Object;
     coverImg: string; // add coverImg field
     category: string;
