@@ -3,6 +3,10 @@ import { Request, Response } from 'express';
 import Blog, {IBlog} from '../models/blog.model';
 import Comment from '../models/comment.model';
 
+interface AuthRequest extends Request {
+    userId: string;
+}
+
 // Get all hotels
 export const getAllBlogs = async (_req: Request, res: Response) => {
     try {
@@ -35,7 +39,7 @@ export const getAllBlogs = async (_req: Request, res: Response) => {
 }
 
 // Get a single blog by ID
-export const getBlogById = async (req: Request, res: Response) => {
+export const getBlogById = async (req: AuthRequest, res: Response) => {
     try {
         const blogId = req.params.id;
         const blog: IBlog | null = await Blog.findById(blogId);
@@ -52,11 +56,11 @@ export const getBlogById = async (req: Request, res: Response) => {
 }
 
 // Create a new blog
-export const createBlog = async (req: Request, res: Response) => {
+export const createBlog = async (req: AuthRequest, res: Response) => {
     try {
     // ✅ Type-safe creation with spread
     // todo: author: req.userId ; add this when you have tokenVerify middleware
-    const blog: IBlog = await Blog.create({ ...req.body }); 
+    const blog: IBlog = await Blog.create({ ...req.body, author: req.userId }); 
     // const blog = new Blog({...req.body, author: req.user.id}); await blog.save();
     // ✅ Type-safe response
     res.status(201).json({
@@ -75,7 +79,7 @@ export const createBlog = async (req: Request, res: Response) => {
 }
 
 // Update a blog by ID
-export const updateBlog = async (req: Request, res: Response) => {
+export const updateBlog = async (req: AuthRequest, res: Response) => {
     try {
         const blogId = req.params.id;
         const updatedBlog: IBlog | null = await Blog.findByIdAndUpdate(blogId, {
@@ -96,7 +100,7 @@ export const updateBlog = async (req: Request, res: Response) => {
 }
 
 // Delete a blog by ID
-export const deleteBlog = async (req: Request, res: Response) => {
+export const deleteBlog = async (req: AuthRequest, res: Response) => {
     try {
         const blogId = req.params.id;
         const deletedBlog: IBlog | null = await Blog.findByIdAndDelete(blogId);
@@ -116,7 +120,7 @@ export const deleteBlog = async (req: Request, res: Response) => {
 }
 
 // related blogs
-export const relatedBlogs = async (req: Request, res: Response) => {
+export const relatedBlogs = async (req: AuthRequest, res: Response) => {
     try {
         const {id} = req.params;
         if (!id) {
