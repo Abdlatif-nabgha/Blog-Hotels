@@ -32,7 +32,7 @@ const Hero = () => {
                         clickable: true,
                     }}
                     autoplay={{
-                        delay: 1500,
+                        delay: 2000,
                         disableOnInteraction: false
                     }}
                     breakpoints={{
