@@ -4,7 +4,7 @@ import Home from "../pages/home/Home";
 import About from "../pages/miniPages/About";
 import PrivacyPolicy from "../pages/miniPages/PrivacyPolicy";
 import ContactUs from "../pages/miniPages/ContactUs";
-
+import SingleBlog from "../pages/blogs/singleBlog/SingleBlog";
 
 const router = createBrowserRouter([
     {
@@ -26,6 +26,10 @@ const router = createBrowserRouter([
             {
                 path: "/contact-us",
                 element: <ContactUs />
+            },
+            {
+                path: "/blogs/:_id",
+                element: <SingleBlog />
             },
         ]
     }
