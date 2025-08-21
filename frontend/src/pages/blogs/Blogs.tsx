@@ -2,6 +2,7 @@ import { useState } from "react";
 import SearchBlog from "./SearchBlog"
 import { useFetchBlogsQuery } from "../../redux/features/blogs/blogsApi";
 import { Link } from "react-router-dom";
+import Loading from "./Loading";
 
 interface Blog {
     title: string;
@@ -23,8 +24,15 @@ const Blogs = () => {
     // get data using redux
     const { data: blogs = [], isLoading, error } = useFetchBlogsQuery(query)
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-    }
+        const value = e.target.value;
+        setSearch(value);
+
+        // if input is cleared, reset query to fetch all blogs
+        if (value === '') {
+            setQuery({ search: '', category: '' });
+        }
+    };
+
 
     const handleSearch = () => {
         setQuery({ search, category });
@@ -37,7 +45,10 @@ const Blogs = () => {
                 handleSearchChange={handleSearchChange}
                 handleSearch={handleSearch}
             />
-            {isLoading && <p>Loading...</p>}
+            <div className="m-4">
+                {isLoading && <Loading />}
+            </div>
+
             {error && <p>Error: {error.toString()}</p>}
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 {

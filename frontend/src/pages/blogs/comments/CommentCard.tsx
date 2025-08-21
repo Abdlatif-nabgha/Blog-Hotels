@@ -1,17 +1,26 @@
 import commentor from "../../../assets/commentor.png"
 import { formatDate } from "../../../utils/formatDate"
 import PostComment from "./PostComment"
+import { useParams } from "react-router-dom"
+import { useFetchBlogByIdQuery } from "../../../redux/features/blogs/blogsApi"
 import type { IComment } from "../../../types/comment"
 
-const CommentCard = ({ comments }: { comments: IComment[] }) => {
+const CommentCard = () => {
+    const { _id } = useParams<{ _id?: string }>();
+    const { data: blog, isLoading } = useFetchBlogByIdQuery(_id as string, { skip: !_id });
+
+    if (isLoading) return <p>Loading comments...</p>;
+
+    const comments = blog?.comments || [];
+
     return (
         <div className="my-6 bg-white p-8">
             <div>
-                {comments?.length > 0 ? (
+                {comments.length > 0 ? (
                     <div>
                         <h3 className="text-lg font-medium">All Comments</h3>
                         <div>
-                            {comments.map((comment) => (
+                            {comments.map((comment: IComment) => (
                                 <div key={comment._id} className="mb-6">
                                     <div className="flex items-center gap-4">
                                         <img
@@ -28,7 +37,6 @@ const CommentCard = ({ comments }: { comments: IComment[] }) => {
                                             </p>
                                         </div>
                                     </div>
-                                    {/* comment details */}
                                     <div className="text-gray-600 mt-5 border p-4 rounded-md">
                                         <p className="md:w-4/5">{comment.comment}</p>
                                     </div>
@@ -40,10 +48,9 @@ const CommentCard = ({ comments }: { comments: IComment[] }) => {
                     <p className="text-lg font-medium">No comments yet</p>
                 )}
             </div>
-            {/* comments input here */}
             <PostComment />
         </div>
     )
 }
 
-export default CommentCard
+export default CommentCard;

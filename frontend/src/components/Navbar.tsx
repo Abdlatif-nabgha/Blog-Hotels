@@ -1,6 +1,11 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { IoClose, IoMenuSharp } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../redux/store";
+import commentor from "../assets/commentor.png"; // Assuming you have an image for the commentor
+import { useLogoutUserMutation } from "../redux/features/auth/authApi";
+import { logout } from "../redux/features/auth/authSlice";
 
 const navLists = [
     { name: "Home", path: "/" },
@@ -11,9 +16,23 @@ const navLists = [
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { user } = useSelector((state: RootState) => state.auth);
+    console.log(user);
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
+    const dispatch = useDispatch();
+    const [logoutUser] = useLogoutUserMutation();
+    // handle logout
+    const handleLogout = async () => {
+        try {
+            await logoutUser().unwrap();
+            dispatch(logout());
+        } catch (error) {
+            console.error("Logout failed:", error);
+
+        }
+    }
     return (
         <header className="bg-white py-6 shadow">
             <nav className="container mx-auto flex justify-between items-center px-5">
@@ -38,18 +57,49 @@ const Navbar = () => {
                             </NavLink>
                         </li>
                     ))}
-                    <li>
-                        <NavLink
-                            to="/login"
-                            className={({ isActive }) =>
-                                isActive
-                                    ? "text-blue-600 font-medium border-blue-600 pb-1"
-                                    : "text-gray-700 hover:text-blue-600 transition"
-                            }
-                        >
-                            Login
-                        </NavLink>
-                    </li>
+                    {/* render btn based on user activity  */}
+                    {
+                        user && user.role === 'user' ?
+                            (
+                                <li className="flex items-center gap-3">
+                                    <img
+                                        src={commentor}
+                                        alt="admin"
+                                        className="size-8" />
+                                    <button onClick={handleLogout} className="bg-blue-600 text-white font-bold hover:bg-blue-700 px-4 py-2 rounded-sm">Logout</button>
+                                </li>
+                            ) :
+                            (
+                                <li>
+                                    <NavLink
+                                        to="/login"
+                                        className={({ isActive }) =>
+                                            isActive
+                                                ? "text-blue-600 font-medium border-blue-600 pb-1"
+                                                : "text-gray-700 hover:text-blue-600 transition"
+                                        }
+                                    >
+                                        Login
+                                    </NavLink>
+                                </li>
+                            )
+                    }
+
+                    {
+                        user && user.role === 'admin' && (
+                            <li className="flex items-center gap-3">
+                                <img
+                                    src={commentor}
+                                    alt="admin"
+                                    className="size-8" />
+                                <Link to="/dashboard">
+                                    <button className="bg-blue-600 text-white font-bold hover:bg-blue-700 px-4 py-2 rounded-sm">
+                                        Dashboard
+                                    </button>
+                                </Link>
+                            </li>
+                        )
+                    }
                 </ul>
                 <div className="flex items-center sm:hidden">
                     <button

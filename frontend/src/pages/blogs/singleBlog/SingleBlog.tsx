@@ -17,7 +17,7 @@ const SingleBlog = () => {
                         <div className="flex flex-col md:flex-row justify-between items-start md:gap-14 gap-8">
                             <div className="lg:w-2/3 w-full">
                                 <SingleBlogCard blog={blog.blog} />
-                                <CommentCard comments={blog.comments} />
+                                <CommentCard />
                             </div>
                             <div className="bg-white p-4 lg:w-1/3 w-full">
                                 <RaletedBlogs />

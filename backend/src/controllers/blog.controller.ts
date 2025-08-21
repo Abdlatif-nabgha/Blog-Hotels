@@ -7,7 +7,7 @@ interface AuthRequest extends Request {
     userId: string;
 }
 
-// Get all hotels
+// Get all blogs
 export const getAllBlogs = async (_req: Request, res: Response) => {
     try {
         // if you want to use a specific query, you can add it here
